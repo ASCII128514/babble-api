@@ -29,16 +29,4 @@ class Api::V1::UsersController < Api::V1::BaseController
       }
     end
   end
-
-  private
-
-  def decode(token)
-    # decode the jwt token to the open id
-    t = JWT.decode token, nil, false
-    t[0]
-  end
-
-  def token_params
-    params.require(:tokens).permit(:token)
-  end
 end
