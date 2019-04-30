@@ -10,14 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_04_30_024507) do
+ActiveRecord::Schema.define(version: 2019_04_30_143456) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "games", force: :cascade do |t|
-    t.integer "rounds"
-    t.integer "find_parter_timer"
+    t.integer "round_number"
+    t.integer "find_partner_timer"
     t.integer "selfie_timer"
     t.integer "question_timer"
     t.bigint "user_id"
