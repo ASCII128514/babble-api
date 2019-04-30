@@ -2,14 +2,12 @@
 
 class Api::V1::UsersController < Api::V1::BaseController
   def login
-    puts "\n\n\n\n\n\n\n\nhahaha"
     code = params[:code]
     puts code.nil?
     if code.nil?
       # retreive the user info if they already have one format: { token: 'token' }
       a = token_params
       authen = a['token']
-
       # retrieve the openid from the authen
       openid = decode(authen)
       render json: {
@@ -30,5 +28,17 @@ class Api::V1::UsersController < Api::V1::BaseController
         authen: authen
       }
     end
+  end
+
+  private
+
+  def decode(token)
+    # decode the jwt token to the open id
+    t = JWT.decode token, nil, false
+    t[0]
+  end
+
+  def token_params
+    params.require(:tokens).permit(:token)
   end
 end
