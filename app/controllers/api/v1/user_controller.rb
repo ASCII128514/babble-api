@@ -23,7 +23,6 @@ class Api::V1::UsersController < Api::V1::BaseController
 
       # store all the info from the user
       @user = User.find_or_create_by(openid: openid)
-      @user.save
 
       authen = JWT.encode payload, nil, 'none'
       render json: {
