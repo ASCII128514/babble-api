@@ -10,6 +10,9 @@ class Api::V1::UsersController < Api::V1::BaseController
       authen = a['token']
       # retrieve the openid from the authen
       openid = decode(authen)
+      puts openid['token']
+      @user = User.find_or_create_by(openid: openid['token'])
+      puts @user
       render json: {
         status: 200
       }
@@ -22,6 +25,7 @@ class Api::V1::UsersController < Api::V1::BaseController
 
       # store all the info from the user
       @user = User.find_or_create_by(openid: openid)
+      puts @user
 
       authen = JWT.encode payload, nil, 'none'
       render json: {

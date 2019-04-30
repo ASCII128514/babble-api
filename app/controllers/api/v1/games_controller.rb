@@ -2,8 +2,11 @@
 
 class Api::V1::GamesController < Api::V1::BaseController
   def create
-    token = params[:token]
-    user = User.where(openid: decode(token)['token'])[0]
+    token = params[:tokens][:token]
+    openid = decode(token)
+    puts openid['token']
+    puts "\n\n\n\n\n\n\n\n\n"
+    user = User.where(openid: openid['token'])
     @game = Game.new(game_params)
     @game.user = user
     @game.save
