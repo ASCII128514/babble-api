@@ -12,6 +12,6 @@ class Api::V1::GamesController < Api::V1::BaseController
   private
 
   def game_params
-    params.require(:game).permit(:rounds, :find_parter_timer, :selfie_timer, :question_timer)
+    params.require(:game).permit(:rounds, :find_partner_timer, :selfie_timer, :question_timer)
   end
 end
