@@ -4,9 +4,12 @@ class Api::V1::GamesController < Api::V1::BaseController
   def create
     token = params[:token]
     user = User.where(openid: decode(token)['token'])[0]
-    game = Game.new(game_params)
-    game.user = user
-    game.save
+    @game = Game.new(game_params)
+    @game.user = user
+    @game.save
+    render json: {
+      game: @game
+    }
   end
 
   private
