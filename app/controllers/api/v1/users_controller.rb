@@ -2,6 +2,7 @@
 
 class Api::V1::UsersController < Api::V1::BaseController
   def login
+    puts "\n\n\n\n\n\n\n\nhahaha"
     code = params[:code]
     puts code.nil?
     if code.nil?

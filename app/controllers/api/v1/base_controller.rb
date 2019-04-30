@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-class Api::V1::BaseController < ActionController::Base
+class Api::V1::BaseController < ActionController::API
   rescue_from StandardError, with: :internal_server_error
   rescue_from ActiveRecord::RecordNotFound, with: :not_found
-  protect_from_forgery with: :null_session
 
   private
 
