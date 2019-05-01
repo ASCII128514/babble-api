@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
-class Api::V1::GamesController < Api::V1::BaseController
+class Api::V1::GamesController < WebsocketRails::BaseController
   def create
+    puts "!!!!!!\n\n\n\n\n\n success \n\n\n\n\n\n\n"
     token = params[:tokens][:token]
     openid = decode(token)['token']
     puts openid
@@ -17,11 +18,14 @@ class Api::V1::GamesController < Api::V1::BaseController
     # @game.round_number = game_params['round_number']
     p @game
     @game.user = user
-    @game.save
-    render json: {
-      game: @game
-    }
+    if @game.save
+      send_message :create_success, game, namespace: :games
+    else
+      send_message :create_fail, game, namespace: :games
+    end
   end
+
+  def client_connected; end
 
   private
 

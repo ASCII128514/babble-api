@@ -8,4 +8,6 @@ Rails.application.routes.draw do
       post '/game', to: 'games#create'
     end
   end
+
+  mount ActionCable.server, at: '/cable'
 end

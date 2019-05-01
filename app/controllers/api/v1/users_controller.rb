@@ -2,6 +2,7 @@
 
 class Api::V1::UsersController < Api::V1::BaseController
   def login
+    ActionCable.server.broadcast 'game_channel_1', great: 'greetings'
     code = params[:code]
     puts code.nil?
     if code.nil?
