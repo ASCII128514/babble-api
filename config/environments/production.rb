@@ -3,9 +3,9 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
   config.action_cable.allowed_request_origins = [%r{http://127.0.0.1:\d+},
-                                                 "https://#{ENV['HOSTNAME']},
-                                                 https://babble.wogengapp.cn"]
-  Rails.application.routes.default_url_options = { host: "https://babble.wogengapp.cn", protocol: 'https' }
+                                                 "https://#{ENV['HOSTNAME']}",
+                                                 "https://babble.wogengapp.cn"]
+  Rails.application.routes.default_url_options = { host: 'https://babble.wogengapp.cn', protocol: 'https' }
   # Code is not reloaded between requests.
   config.cache_classes = true
 
