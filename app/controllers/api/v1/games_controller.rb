@@ -28,10 +28,10 @@ class Api::V1::GamesController < Api::V1::BaseController
     end
 
     ob = `curl -X POST \
-  -H "X-LC-Id: qaxMtbr0N9ldQALQk8k7M14Q-gzGzoHsz" \
-  -H "X-LC-Key: SorVkQ5HF4Ic9HfN8ajsNa9l" \
+  -H "X-LC-Id: #{ENV['XLCID']}" \
+  -H "X-LC-Key: #{ENV['XLCKEY']}" \
   -H "Content-Type: image/png" \
-  --data-binary "@test.png"  \
+  --data-binary "@QRcode.png"  \
   https://qaxmtbr0.api.lncld.net/1.1/files/test.png`
     url = JSON.parse(ob)['url']
     render json: {
