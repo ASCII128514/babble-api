@@ -15,8 +15,12 @@ class Api::V1::GamesController < Api::V1::BaseController
     p @game
     @game.status = 'start'
     @game.user = user
+    p "\n\n\n\n\n\n"
+    p @game
     @game.save
     # get the access token to get the QR code
+    p @game
+    p "\n\n\n\n\n\n\n"
     res = JSON.parse(RestClient.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{ENV['APPID']}&secret=#{ENV['SECRET_KEY']}"))
     # return the QR code to the user
     access_token = res['access_token']

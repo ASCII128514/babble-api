@@ -13,8 +13,10 @@ class Api::V1::UsersController < Api::V1::BaseController
       puts openid['token']
       @user = User.find_or_create_by(openid: openid['token'])
       puts @user
+      @user.game
       render json: {
-        status: 200
+        status: 200,
+        game: @game
       }
     else
       # send info to the wehat api to get open id and store them into the storage
