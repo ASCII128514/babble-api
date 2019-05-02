@@ -13,7 +13,7 @@ class Api::V1::UsersController < Api::V1::BaseController
       puts openid['token']
       @user = User.find_or_create_by(openid: openid['token'])
       puts @user
-      @game = @user.game
+      @game = @user.games
       render json: {
         status: 200,
         game: @game
