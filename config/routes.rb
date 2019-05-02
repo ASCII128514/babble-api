@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       post '/login', to: 'users#login', as: :login
-      post '/game', to: 'games#create'
+      post '/game', to: 'games#create', as: :game
     end
   end
 

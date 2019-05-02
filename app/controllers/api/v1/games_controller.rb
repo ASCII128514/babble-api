@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-class Api::V1::GamesController < WebsocketRails::BaseController
+class Api::V1::GamesController < Api::V1::BaseController
   def create
-    puts "!!!!!!\n\n\n\n\n\n success \n\n\n\n\n\n\n"
     token = params[:tokens][:token]
     openid = decode(token)['token']
-    puts openid
-    puts "\n\n\n\n\n\n\n\n\n"
+
     user = User.where(openid: openid)[0]
-    p game_params
-    p user
     @game = Game.new(game_params)
     p @game
     # @game.find_partner_timer = game_params['find_partner_timer']
@@ -18,24 +14,25 @@ class Api::V1::GamesController < WebsocketRails::BaseController
     # @game.round_number = game_params['round_number']
     p @game
     @game.user = user
-
+    @game.save
     # get the access token to get the QR code
-
     res = JSON.parse(RestClient.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{ENV['APPID']}&secret=#{ENV['SECRET_KEY']}"))
     # return the QR code to the user
     access_token = res['access_token']
 
-    img = RestClient.post("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token#{access_token}", { "scene": "room=#{id}" }.to_json).body
+    img = RestClient.post("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token#{access_token}", { "scene": "room=#{@game.id}" }.to_json).body
+    puts "\n\n\n\n\n\n\n\n\n"
+    p img
     File.open('QRcode.png', 'wb') do |file|
       file << img
     end
 
-    ob = %x{curl -X POST \
+    ob = `curl -X POST \
   -H "X-LC-Id: qaxMtbr0N9ldQALQk8k7M14Q-gzGzoHsz" \
   -H "X-LC-Key: SorVkQ5HF4Ic9HfN8ajsNa9l" \
   -H "Content-Type: image/png" \
   --data-binary "@test.png"  \
-  https://qaxmtbr0.api.lncld.net/1.1/files/test.png}
+  https://qaxmtbr0.api.lncld.net/1.1/files/test.png`
     url = JSON.parse(ob)['url']
     render json: {
       url: url
