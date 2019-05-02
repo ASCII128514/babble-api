@@ -2,7 +2,7 @@
 
 class GameChannel < ApplicationCable::Channel
   def subscribed
-    stream_from 'game_channel_1'
+    stream_from "game_channel_#{params[:room]}"
     puts params
     puts "\n\n\n\n\n\n runed!!!"
   end
