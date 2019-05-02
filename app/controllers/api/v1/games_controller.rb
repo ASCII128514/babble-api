@@ -13,6 +13,7 @@ class Api::V1::GamesController < Api::V1::BaseController
     # @game.question_timer = game_params['question_timer']
     # @game.round_number = game_params['round_number']
     p @game
+    @game.status = 'start'
     @game.user = user
     @game.save
     # get the access token to get the QR code
