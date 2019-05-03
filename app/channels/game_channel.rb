@@ -53,12 +53,13 @@ class GameChannel < ApplicationCable::Channel
     puts "in unsubscribe\n\n\n\n\n\n\n\n"
     token = params[:token]
     openid = decode(token)
+    p openid['token']
     @user = User.find_by(openid: openid['token'])
     sub = @user.subscribers.select { |x| x.game.id == params[:room] }
     p sub
     puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nn\n\n\n\n\n\n"
-    sub.destroy_all
-
+    sub.each(&:destroy)
+    ids = []
     @users = []
     u = @game.users
     puts "run!!\n\n\n\n"
