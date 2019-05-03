@@ -54,10 +54,10 @@ class GameChannel < ApplicationCable::Channel
     token = params[:token]
     openid = decode(token)
     @user = User.find_by(openid: openid[:token])
-    sub = @user.subscribers.find { |x| x.game.id == params[:room] }
+    sub = @user.subscribers.select { |x| x.game.id == params[:room] }
     p sub
     puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nn\n\n\n\n\n\n"
-    sub.destroy
+    sub.first.destroy
   end
 
   private
