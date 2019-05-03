@@ -53,11 +53,29 @@ class GameChannel < ApplicationCable::Channel
     puts "in unsubscribe\n\n\n\n\n\n\n\n"
     token = params[:token]
     openid = decode(token)
-    @user = User.find_by(openid: openid[:token])
+    @user = User.find_by(openid: openid['token'])
     sub = @user.subscribers.select { |x| x.game.id == params[:room] }
     p sub
     puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nn\n\n\n\n\n\n"
-    sub.first.destroy
+    sub.destroy_all
+
+    @users = []
+    u = @game.users
+    puts "run!!\n\n\n\n"
+    # filter the people that is not in the room
+    u.each do |user|
+      puts user.id
+      puts 'inside loop'
+      unless ids.include?(user.id)
+        ids << user.id
+        @users << user
+      end
+    end
+    p ids
+    p @users
+    ActionCable.server.broadcast("game_channel_#{params[:room]}",
+                                 type: 'users',
+                                 players: @users)
   end
 
   private
