@@ -3,5 +3,6 @@
 class Game < ApplicationRecord
   belongs_to :user
   has_many :rounds, dependent: :destroy
-  has_many :user, through: :subscribers
+  has_many :subscribers
+  has_many :users, through: :subscribers
 end
