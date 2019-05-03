@@ -69,7 +69,7 @@ class GameChannel < ApplicationCable::Channel
       puts 'inside loop'
       unless ids.include?(user.id)
         ids << user.id
-        @users << user
+        @users << user if user.openid != openid['token']
       end
     end
     p ids
