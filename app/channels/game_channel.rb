@@ -8,7 +8,9 @@ class GameChannel < ApplicationCable::Channel
     # para = JSON.parse(params)
     token = params[:token]
     openid = decode(token)
-    @user = User.find_by(openid: openid[:token])
+    p openid['token']
+    puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    @user = User.find_by(openid: openid['token'])
     # find the game and add a join table between the user and the game
     @game = Game.find(params[:room])
 
