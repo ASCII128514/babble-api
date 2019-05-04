@@ -56,6 +56,9 @@ class Api::V1::GamesController < Api::V1::BaseController
     }
   end
 
+  # generate a question for the paired user
+  def question; end
+
   private
 
   def game_params

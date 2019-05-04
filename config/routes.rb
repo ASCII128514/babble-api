@@ -7,6 +7,7 @@ Rails.application.routes.draw do
       post '/login', to: 'users#login', as: :login
       post '/game', to: 'games#create', as: :game
       get '/game/:id', to: 'games#show'
+      get '/game/:id/question', to: 'games#question'
     end
   end
 
