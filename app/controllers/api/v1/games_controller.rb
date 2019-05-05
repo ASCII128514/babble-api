@@ -57,7 +57,13 @@ class Api::V1::GamesController < Api::V1::BaseController
   end
 
   # generate a question for the paired user
-  def question; end
+  def question
+    # get the question for every user
+  end
+
+  def pair
+    # use the game id and user token to generate the random pair of users
+  end
 
   private
 

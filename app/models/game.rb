@@ -5,4 +5,5 @@ class Game < ApplicationRecord
   has_many :rounds, dependent: :destroy
   has_many :subscribers
   has_many :users, through: :subscribers
+  has_many :lists
 end

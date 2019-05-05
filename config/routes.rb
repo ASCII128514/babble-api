@@ -8,6 +8,10 @@ Rails.application.routes.draw do
       post '/game', to: 'games#create', as: :game
       get '/game/:id', to: 'games#show'
       get '/game/:id/question', to: 'games#question'
+
+      # get all the users paired
+      # need the room id and the user token so can just send the paired user to the server
+      get 'game/:id/pair', to: 'games#pair'
     end
   end
 

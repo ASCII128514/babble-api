@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_03_011741) do
+ActiveRecord::Schema.define(version: 2019_05_05_003228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,6 +26,25 @@ ActiveRecord::Schema.define(version: 2019_05_03_011741) do
     t.string "status"
     t.integer "game_round_now", default: 0
     t.index ["user_id"], name: "index_games_on_user_id"
+  end
+
+  create_table "lists", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "game_id"
+    t.string "round_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_lists_on_game_id"
+    t.index ["user_id"], name: "index_lists_on_user_id"
+  end
+
+  create_table "pairs", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "list_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id"], name: "index_pairs_on_list_id"
+    t.index ["user_id"], name: "index_pairs_on_user_id"
   end
 
   create_table "rounds", force: :cascade do |t|
@@ -61,6 +80,10 @@ ActiveRecord::Schema.define(version: 2019_05_03_011741) do
   end
 
   add_foreign_key "games", "users"
+  add_foreign_key "lists", "games"
+  add_foreign_key "lists", "users"
+  add_foreign_key "pairs", "lists"
+  add_foreign_key "pairs", "users"
   add_foreign_key "rounds", "games"
   add_foreign_key "rounds", "tasks"
   add_foreign_key "subscribers", "games"
