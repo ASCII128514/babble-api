@@ -232,7 +232,7 @@ class Api::V1::GamesController < Api::V1::BaseController
 
         # add them as pair for this round if they haven't be before
         @gamerlist = @gamerlists.find { |z| z.user == x }
-        next if @gamerlist.nil?
+        next unless @gamerlist.nil?
 
         # this means the user the haven't paired with, so create a pair
         p_token = { token: p.openid }
