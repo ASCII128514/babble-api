@@ -67,9 +67,9 @@ class Api::V1::GamesController < Api::V1::BaseController
   #   # clear all the pairs once everyone has a pair once
 
   #   # find the game and all its players, and the round
-    # @game = Game.find(params[:id])
-    # @players = @games.users
-    # @round = params[:round]
+  # @game = Game.find(params[:id])
+  # @players = @games.users
+  # @round = params[:round]
 
   #   # find the current user
   #   token = params[:token]
@@ -132,7 +132,7 @@ class Api::V1::GamesController < Api::V1::BaseController
   #         other_user_pair.list = other_player_list
   #         pair.save
   #         those_two_users_pair = Pair.new
-  #         those_two_users_pair.user = 
+  #         those_two_users_pair.user =
   #       end
 
   #     end
@@ -149,10 +149,101 @@ class Api::V1::GamesController < Api::V1::BaseController
   # end
 
   def pair
+    # create the hash that will be returned later
+    pairs = {}
+
     # the game creator will be able to access this function to broadcast to every whose their pair
     @game = Game.find(params[:id])
-    @players = @games.users
+    puts 'this line is running!!!!'
+
+    @players = @game.users
+    p @players
     @round = params[:round]
+    @pairlist = @game.pairlists.first
+
+    # find the current user
+    token = params[:token]
+    hash_openid = decode(token)
+    openid = hash_openid['token']
+    @user = User.find_by(openid: openid)
+
+    # create the pairlist
+    @players.each do |x|
+      Pairlist.find_or_create_by(game: @game, user: x)
+    end
+
+    # shuffle every user to match them
+    @players = @players.shuffle
+
+    # check if the gamers have already played with all the other people
+    check_list = @players.first.pairlists
+    check_user = @game.users
+    check_user.each do |h|
+      check_user -= [h] if check_list.include?(h)
+    end
+
+    if check_user.length < 2
+      # destroy all the pairs to start over
+      @game.pairlists.each do |r|
+        r.gamerlists.each(&:destroy)
+      end
+    end
+
+    if @players.length.odd?
+      # get the last person to talk to allen
+      @last_person = @players[-1]
+      @players -= [@last_person]
+
+      last_token = { token: @last_person.openid }
+      last_authen = JWT.encode last_token, nil, 'none'
+
+      # assign him to allen
+      pairs[last_authen] = 'talk to Allen'
+    end
+    # use a for loop to find everyone's pair
+    @players.each do |p|
+      @players.each do |x|
+        next if p == x
+
+        # check whether the user has alrady paired with everyone else
+
+        # check whether p has paired with x before
+        @pairlists = @game.pairlists
+        @pairlist = @pairlists.find { |y| y.user == p }
+        @gamerlists = @pairlist.gamerlists
+
+        # add them as pair for this round if they haven't be before
+        @gamerlist = @gamerlists.find { |z| z.user == x }
+        next if @gamerlist.nil?
+
+        # this means the user the haven't paired with, so create a pair
+        p_token = { token: p.openid }
+        p_authen = JWT.encode p_token, nil, 'none'
+        x_token = { token: x.openid }
+        x_authen = JWT.encode x_token, nil, 'none'
+        pairs[p_authen] = x
+        pairs[x_authen] = p
+        p_gl = Gamerlist.new
+        x_gl = Gamerlist.new
+
+        # get the pairlist for both p and x
+        p_pl = @game.pairlists.find { |a| a.user == p }
+        x_pl = @game.pairlists.find { |a| a.user == x }
+
+        p_gl.pairlist = x_pl
+        x_gl.pairlist = p_pl
+        p_gl.save
+        x_gl.save
+
+        # remove this two from the player list
+        @players -= [p]
+        @players -= [x]
+      end
+    end
+
+    render json: {
+      pairs: pairs
+    }
   end
 
   private
