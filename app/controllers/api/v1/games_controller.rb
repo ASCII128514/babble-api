@@ -205,6 +205,8 @@ class Api::V1::GamesController < Api::V1::BaseController
     end
 
     if @players.length.odd?
+      p @players.length
+      puts "inside the odd function\n\n\n\n\n\n"
       # get the last person to talk to allen
       puts "this is inside the odd function \n\n\n\n\n\n\n\n\n\n\n"
       @last_person = @players[-1]
