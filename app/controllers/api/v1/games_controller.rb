@@ -248,8 +248,8 @@ class Api::V1::GamesController < Api::V1::BaseController
         # add question to every two users
         t = Task.all.sample
         p t
-        pairs[p_authen] = {user: x, question: t.description }
-        pairs[x_authen] = {user: p, question: t.description }
+        pairs[p_authen] = { user: x, question: t.description }
+        pairs[x_authen] = { user: p, question: t.description }
         p_gl = Gamerlist.new
         x_gl = Gamerlist.new
 
