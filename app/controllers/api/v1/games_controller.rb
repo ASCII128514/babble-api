@@ -197,13 +197,16 @@ class Api::V1::GamesController < Api::V1::BaseController
 
     if check_user.length < 2
       # destroy all the pairs to start over
+      puts "this is inside the destruction function \n\n\n\n\n\n\n\n\n\n\n"
       @game.pairlists.each do |r|
         r.gamerlists.each(&:destroy)
       end
+      p @game.pairlists
     end
 
     if @players.length.odd?
       # get the last person to talk to allen
+      puts "this is inside the odd function \n\n\n\n\n\n\n\n\n\n\n"
       @last_person = @players[-1]
       @players -= [@last_person]
 
@@ -212,12 +215,14 @@ class Api::V1::GamesController < Api::V1::BaseController
 
       # assign him to allen
       pairs[last_authen] = ['talk to Allen', 'ask him everything']
+      p pairs
     end
     # use a for loop to find everyone's pair
     @players.each do |p|
       @players.each do |x|
         next if p == x
 
+        puts "this is inside the for loop!!!!!!! \n\n\n\n\n\n\n\n\n\n\n"
         # check whether the user has alrady paired with everyone else
 
         # check whether p has paired with x before
@@ -237,7 +242,8 @@ class Api::V1::GamesController < Api::V1::BaseController
 
         # add question to every two users
         t = Task.all.sample
-
+        p [p].first
+        p [x].first
         pairs[p_authen] = [x, t]
         pairs[x_authen] = [p, t]
         p_gl = Gamerlist.new
