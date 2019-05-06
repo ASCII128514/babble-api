@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_05_003228) do
+ActiveRecord::Schema.define(version: 2019_05_06_014649) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "gamerlists", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "pairlist_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pairlist_id"], name: "index_gamerlists_on_pairlist_id"
+    t.index ["user_id"], name: "index_gamerlists_on_user_id"
+  end
 
   create_table "games", force: :cascade do |t|
     t.integer "round_number"
@@ -31,11 +40,20 @@ ActiveRecord::Schema.define(version: 2019_05_05_003228) do
   create_table "lists", force: :cascade do |t|
     t.bigint "user_id"
     t.bigint "game_id"
-    t.string "round_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "round_number"
     t.index ["game_id"], name: "index_lists_on_game_id"
     t.index ["user_id"], name: "index_lists_on_user_id"
+  end
+
+  create_table "pairlists", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "game_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id"], name: "index_pairlists_on_game_id"
+    t.index ["user_id"], name: "index_pairlists_on_user_id"
   end
 
   create_table "pairs", force: :cascade do |t|
@@ -79,9 +97,13 @@ ActiveRecord::Schema.define(version: 2019_05_05_003228) do
     t.string "openid"
   end
 
+  add_foreign_key "gamerlists", "pairlists"
+  add_foreign_key "gamerlists", "users"
   add_foreign_key "games", "users"
   add_foreign_key "lists", "games"
   add_foreign_key "lists", "users"
+  add_foreign_key "pairlists", "games"
+  add_foreign_key "pairlists", "users"
   add_foreign_key "pairs", "lists"
   add_foreign_key "pairs", "users"
   add_foreign_key "rounds", "games"

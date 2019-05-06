@@ -6,4 +6,5 @@ class Game < ApplicationRecord
   has_many :subscribers
   has_many :users, through: :subscribers
   has_many :lists
+  has_many :pairlists
 end
