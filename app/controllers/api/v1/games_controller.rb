@@ -229,19 +229,22 @@ class Api::V1::GamesController < Api::V1::BaseController
         @pairlists = @game.pairlists
         @pairlist = @pairlists.find { |y| y.user == p }
         @gamerlists = @pairlist.gamerlists
-
+        puts "in line 232\n\n\n\n"
         # add them as pair for this round if they haven't be before
         @gamerlist = @gamerlists.find { |z| z.user == x }
         next unless @gamerlist.nil?
 
+        puts "in line 236\n\n\n\n"
         # this means the user the haven't paired with, so create a pair
         p_token = { token: p.openid }
         p_authen = JWT.encode p_token, nil, 'none'
         x_token = { token: x.openid }
         x_authen = JWT.encode x_token, nil, 'none'
-
+        puts "in line 242\n\n\n\n"
+        p p_authen
+        p x_authen
         # add question to every two users
-        t = Task.all.shuffle.first
+        t = Task.all.sample
         p [p].first
         p [x].first
         pairs[p_authen] = [x, t]
@@ -249,6 +252,8 @@ class Api::V1::GamesController < Api::V1::BaseController
         p_gl = Gamerlist.new
         x_gl = Gamerlist.new
 
+        puts "in line 255\n\n\n\n"
+        p pairs
         # get the pairlist for both p and x
         p_pl = @game.pairlists.find { |a| a.user == p }
         x_pl = @game.pairlists.find { |a| a.user == x }
