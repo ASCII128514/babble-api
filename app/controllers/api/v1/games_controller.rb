@@ -241,7 +241,7 @@ class Api::V1::GamesController < Api::V1::BaseController
         x_authen = JWT.encode x_token, nil, 'none'
 
         # add question to every two users
-        t = Task.all.sample
+        t = Task.all.shuffle.first
         p [p].first
         p [x].first
         pairs[p_authen] = [x, t]
