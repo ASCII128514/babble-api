@@ -175,6 +175,19 @@ class Api::V1::GamesController < Api::V1::BaseController
     # shuffle every user to match them
     @players = @players.shuffle
 
+    # # allen's special version
+    # if @round.to_i == 2
+    #   @players.each do |p|
+    #     p_token = { token: p.openid }
+    #     p_authen = JWT.encode p_token, nil, 'none'
+    #     pairs[p_authen] = ["placeholder for allen's phone", 'ask him everything']
+    #   end
+    #   render json: {
+    #     pairs: pairs
+    #   }
+    #   return
+    # end
+
     # check if the gamers have already played with all the other people
     check_list = @players.first.pairlists
     check_user = @game.users
@@ -198,7 +211,7 @@ class Api::V1::GamesController < Api::V1::BaseController
       last_authen = JWT.encode last_token, nil, 'none'
 
       # assign him to allen
-      pairs[last_authen] = 'talk to Allen'
+      pairs[last_authen] = ['talk to Allen', 'ask him everything']
     end
     # use a for loop to find everyone's pair
     @players.each do |p|
@@ -221,8 +234,12 @@ class Api::V1::GamesController < Api::V1::BaseController
         p_authen = JWT.encode p_token, nil, 'none'
         x_token = { token: x.openid }
         x_authen = JWT.encode x_token, nil, 'none'
-        pairs[p_authen] = x
-        pairs[x_authen] = p
+
+        # add question to every two users
+        t = Task.all.sample
+
+        pairs[p_authen] = [x, t]
+        pairs[x_authen] = [p, t]
         p_gl = Gamerlist.new
         x_gl = Gamerlist.new
 
