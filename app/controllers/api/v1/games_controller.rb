@@ -270,6 +270,10 @@ class Api::V1::GamesController < Api::V1::BaseController
       end
     end
 
+    ActionCable.server.broadcast("game_channel_#{@game.id}",
+                                 type: 'pair',
+                                 pairs: pairs)
+
     render json: {
       pairs: pairs
     }
