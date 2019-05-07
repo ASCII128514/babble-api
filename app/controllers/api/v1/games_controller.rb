@@ -149,6 +149,7 @@ class Api::V1::GamesController < Api::V1::BaseController
   # end
 
   def boardcast
+    @game = Game.find(params[:id])
     ids = []
     @users = []
     u = @game.users
