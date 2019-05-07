@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       get '/game/:id/display', to: 'games#boardcast'
       get '/game/:id', to: 'games#show'
       get '/game/:id/question', to: 'games#question'
+      put 'user/profile', to: 'users#profile'
 
       # get all the users paired
       # need the room id and the user token so can just send the paired user to the server

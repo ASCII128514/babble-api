@@ -35,4 +35,13 @@ class Api::V1::UsersController < Api::V1::BaseController
       }
     end
   end
+
+  def profile
+    # find the current user
+    token = params[:token]
+    hash_openid = decode(token)
+    openid = hash_openid['token']
+    @user = User.find_by(openid: openid)
+    @user.update(selfie: params[:url])
+  end
 end
