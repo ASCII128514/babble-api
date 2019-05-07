@@ -37,7 +37,8 @@ class Api::V1::GamesController < Api::V1::BaseController
   https://qaxmtbr0.api.lncld.net/1.1/files/test.png`
     url = JSON.parse(ob)['url']
     render json: {
-      url: url
+      url: url,
+      room: @game.id
     }
 
     # if @game.save
