@@ -149,6 +149,21 @@ class Api::V1::GamesController < Api::V1::BaseController
   # end
 
   def boardcast
+    ids = []
+    @users = []
+    u = @game.users
+    puts "run!!\n\n\n\n"
+    # filter the people that is not in the room
+    u.each do |user|
+      puts user.id
+      puts 'inside loop'
+      unless ids.include?(user.id)
+        ids << user.id
+        @users << user
+      end
+    end
+    p ids
+    p @users
     ActionCable.server.broadcast("game_channel_#{params[:id]}",
                                  type: 'users',
                                  players: @users)
