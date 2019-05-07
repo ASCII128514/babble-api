@@ -151,17 +151,7 @@ class Api::V1::GamesController < Api::V1::BaseController
 
   def boardcast
     @game = Game.find(params[:id])
-    r = @game.game_round_now + 1
-    @game.update(game_round_now: r)
 
-    # check whether the round is the less than the round number
-    if r > @game.round_number
-      ActionCable.server.broadcast("game_channel_#{params[:id]}",
-                                 type: 'finish')
-      @game.update(status: 'end')
-      return
-
-    end
     ids = []
     @users = []
     u = @game.users
@@ -203,6 +193,18 @@ class Api::V1::GamesController < Api::V1::BaseController
     @user = User.find_by(openid: openid)
 
     return unless @game.user == @user
+
+    r = @game.game_round_now + 1
+    @game.update(game_round_now: r)
+
+    # check whether the round is the less than the round number
+    if r > @game.round_number
+      ActionCable.server.broadcast("game_channel_#{params[:id]}",
+                                   type: 'finish')
+      @game.update(status: 'end')
+      return
+
+    end
 
     # create the pairlist
     @players.each do |x|
