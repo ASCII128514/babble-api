@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       post '/login', to: 'users#login', as: :login
       post '/game', to: 'games#create', as: :game
+      get '/game/:id/display', to: 'games#boardcast'
       get '/game/:id', to: 'games#show'
       get '/game/:id/question', to: 'games#question'
 

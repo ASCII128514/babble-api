@@ -148,6 +148,12 @@ class Api::V1::GamesController < Api::V1::BaseController
   #   end
   # end
 
+  def boardcast
+        ActionCable.server.broadcast("game_channel_#{params[:id]}",
+                                 type: 'users',
+                                 players: @users)
+  end
+
   def pair
     # create the hash that will be returned later
     pairs = {}
@@ -166,6 +172,8 @@ class Api::V1::GamesController < Api::V1::BaseController
     hash_openid = decode(token)
     openid = hash_openid['token']
     @user = User.find_by(openid: openid)
+
+    return unless @game.user == @user
 
     # create the pairlist
     @players.each do |x|
@@ -216,7 +224,7 @@ class Api::V1::GamesController < Api::V1::BaseController
       last_authen = JWT.encode last_token, nil, 'none'
 
       # assign him to allen
-      pairs[last_authen] = {user: 'talk to Allen', question: 'ask him everything'}
+      pairs[last_authen] = { user: 'talk to Allen', question: 'ask him everything' }
       p pairs
     end
     # use a for loop to find everyone's pair
