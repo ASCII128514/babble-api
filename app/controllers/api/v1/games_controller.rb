@@ -151,6 +151,17 @@ class Api::V1::GamesController < Api::V1::BaseController
 
   def boardcast
     @game = Game.find(params[:id])
+    r = @game.game_round_now + 1
+    @game.update(game_round_now: r)
+
+    # check whether the round is the less than the round number
+    if r > @game.round_number
+      ActionCable.server.broadcast("game_channel_#{params[:id]}",
+                                 type: 'finish')
+      @game.update(status: 'end')
+      return
+
+    end
     ids = []
     @users = []
     u = @game.users
@@ -168,7 +179,8 @@ class Api::V1::GamesController < Api::V1::BaseController
     p @users
     ActionCable.server.broadcast("game_channel_#{params[:id]}",
                                  type: 'users',
-                                 players: @users)
+                                 players: @users,
+                                 round: @game.game_round_now)
   end
 
   def pair
@@ -297,7 +309,8 @@ class Api::V1::GamesController < Api::V1::BaseController
 
     ActionCable.server.broadcast("game_channel_#{@game.id}",
                                  type: 'pair',
-                                 pairs: pairs)
+                                 pairs: pairs,
+                                 round: @game.game_round_now)
 
     render json: {
       pairs: pairs
