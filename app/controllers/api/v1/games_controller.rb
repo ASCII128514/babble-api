@@ -197,11 +197,12 @@ class Api::V1::GamesController < Api::V1::BaseController
     r = @game.game_round_now + 1
     @game.update(game_round_now: r)
 
+    @game.update(status: 'end') if r == @game.round_number
+
     # check whether the round is the less than the round number
     if r > @game.round_number
       ActionCable.server.broadcast("game_channel_#{params[:id]}",
                                    type: 'finish')
-      @game.update(status: 'end')
       return
 
     end
