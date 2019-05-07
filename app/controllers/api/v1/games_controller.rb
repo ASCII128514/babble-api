@@ -149,7 +149,7 @@ class Api::V1::GamesController < Api::V1::BaseController
   # end
 
   def boardcast
-        ActionCable.server.broadcast("game_channel_#{params[:id]}",
+    ActionCable.server.broadcast("game_channel_#{params[:id]}",
                                  type: 'users',
                                  players: @users)
   end
