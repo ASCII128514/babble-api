@@ -16,7 +16,8 @@ class Api::V1::UsersController < Api::V1::BaseController
       @game = @user.games
       render json: {
         status: 200,
-        game: @game
+        game: @game,
+        currentUser: @user
       }
     else
       # send info to the wehat api to get open id and store them into the storage
@@ -31,7 +32,8 @@ class Api::V1::UsersController < Api::V1::BaseController
 
       authen = JWT.encode payload, nil, 'none'
       render json: {
-        authen: authen
+        authen: authen,
+        currentUser: @user
       }
     end
   end
