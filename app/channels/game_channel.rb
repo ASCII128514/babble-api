@@ -2,13 +2,10 @@
 
 class GameChannel < ApplicationCable::Channel
   def subscribed
-    p params[:room]
-    puts "\n\n\n\n\n"
     # add a subscribers thing to the db
     # para = JSON.parse(params)
     token = params[:token]
     openid = decode(token)
-    p openid['token']
     puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
     @user = User.find_by(openid: openid['token'])
     # find the game and add a join table between the user and the game
@@ -21,18 +18,13 @@ class GameChannel < ApplicationCable::Channel
     ids = []
     @users = []
     u = @game.users
-    puts "run!!\n\n\n\n"
     # filter the people that is not in the room
     u.each do |user|
-      puts user.id
-      puts 'inside loop'
       unless ids.include?(user.id)
         ids << user.id
         @users << user
       end
     end
-    p ids
-    p @users
     stream_from "game_channel_#{params[:room]}"
     # GameChannel.broadcast_to(
     #   "game_channel_#{params[:room]}",
@@ -49,20 +41,15 @@ class GameChannel < ApplicationCable::Channel
 
   def unsubscribed
     # remove the subscriber join table if the user close the connection
-    p params[:token]
-    puts "in unsubscribe\n\n\n\n\n\n\n\n"
     token = params[:token]
     openid = decode(token)
     p openid['token']
     @user = User.find_by(openid: openid['token'])
     sub = @user.subscribers.select { |x| x.game.id == params[:room] }
-    p sub
-    puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nn\n\n\n\n\n\n"
     sub.each(&:destroy)
     ids = []
     @users = []
     u = @game.users
-    puts "run!!\n\n\n\n"
     # filter the people that is not in the room
     u.each do |user|
       puts user.id
@@ -72,8 +59,6 @@ class GameChannel < ApplicationCable::Channel
         @users << user if user.openid != openid['token']
       end
     end
-    p ids
-    p @users
     ActionCable.server.broadcast("game_channel_#{params[:room]}",
                                  type: 'users',
                                  players: @users)

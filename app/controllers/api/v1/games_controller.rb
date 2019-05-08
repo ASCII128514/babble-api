@@ -7,20 +7,14 @@ class Api::V1::GamesController < Api::V1::BaseController
 
     user = User.where(openid: openid)[0]
     @game = Game.new(game_params)
-    p @game
     # @game.find_partner_timer = game_params['find_partner_timer']
     # @game.selfie_timer = game_params['selfie_timer']
     # @game.question_timer = game_params['question_timer']
     # @game.round_number = game_params['round_number']
-    p @game
     @game.status = 'start'
     @game.user = user
-    p "\n\n\n\n\n\n"
-    p @game
     @game.save
     # get the access token to get the QR code
-    p @game
-    p "\n\n\n\n\n\n\n"
     res = JSON.parse(RestClient.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{ENV['APPID']}&secret=#{ENV['SECRET_KEY']}"))
     # return the QR code to the user
     access_token = res['access_token']
@@ -155,7 +149,6 @@ class Api::V1::GamesController < Api::V1::BaseController
     ids = []
     @users = []
     u = @game.users
-    puts "run!!\n\n\n\n"
     # filter the people that is not in the room
     u.each do |user|
       puts user.id
@@ -165,8 +158,6 @@ class Api::V1::GamesController < Api::V1::BaseController
         @users << user
       end
     end
-    p ids
-    p @users
     ActionCable.server.broadcast("game_channel_#{params[:id]}",
                                  type: 'users',
                                  players: @users,
@@ -182,7 +173,6 @@ class Api::V1::GamesController < Api::V1::BaseController
     puts 'this line is running!!!!'
 
     @players = @game.users
-    p @players
     @round = params[:round]
     @pairlist = @game.pairlists.first
 
@@ -241,11 +231,9 @@ class Api::V1::GamesController < Api::V1::BaseController
       @game.pairlists.each do |r|
         r.gamerlists.each(&:destroy)
       end
-      p @game.pairlists
     end
 
     if @players.length.odd?
-      p @players.length
       puts "inside the odd function\n\n\n\n\n\n"
       # get the last person to talk to allen
       puts "this is inside the odd function \n\n\n\n\n\n\n\n\n\n\n"
@@ -257,7 +245,6 @@ class Api::V1::GamesController < Api::V1::BaseController
 
       # assign him to allen
       pairs[last_authen] = { user: 'talk to Allen', question: 'ask him everything' }
-      p pairs
     end
     # use a for loop to find everyone's pair
     @players.each do |p|
@@ -271,30 +258,23 @@ class Api::V1::GamesController < Api::V1::BaseController
         @pairlists = @game.pairlists
         @pairlist = @pairlists.find { |y| y.user == p }
         @gamerlists = @pairlist.gamerlists
-        puts "in line 232\n\n\n\n"
         # add them as pair for this round if they haven't be before
         @gamerlist = @gamerlists.find { |z| z.user == x }
         next unless @gamerlist.nil?
 
-        puts "in line 236\n\n\n\n"
         # this means the user the haven't paired with, so create a pair
         p_token = { token: p.openid }
         p_authen = JWT.encode p_token, nil, 'none'
         x_token = { token: x.openid }
         x_authen = JWT.encode x_token, nil, 'none'
         puts "in line 242\n\n\n\n"
-        p p_authen
-        p x_authen
         # add question to every two users
         t = Task.all.sample
-        p t
         pairs[p_authen] = { user: x, question: t.description }
         pairs[x_authen] = { user: p, question: t.description }
         p_gl = Gamerlist.new
         x_gl = Gamerlist.new
 
-        puts "in line 255\n\n\n\n"
-        p pairs
         # get the pairlist for both p and x
         p_pl = @game.pairlists.find { |a| a.user == p }
         x_pl = @game.pairlists.find { |a| a.user == x }
