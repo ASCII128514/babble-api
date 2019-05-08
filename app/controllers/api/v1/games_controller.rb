@@ -173,7 +173,7 @@ class Api::V1::GamesController < Api::V1::BaseController
     puts 'this line is running!!!!'
 
     @players = @game.users
-    @round = params[:round]
+    @round = params[:round].to_i
     @pairlist = @game.pairlists.first
 
     # find the current user
@@ -200,7 +200,6 @@ class Api::V1::GamesController < Api::V1::BaseController
     @players.each do |x|
       Pairlist.find_or_create_by(game: @game, user: x)
     end
-
     array_of_player_unique = []
     @players = @players.uniq
 
@@ -249,16 +248,11 @@ class Api::V1::GamesController < Api::V1::BaseController
       pairs[last_authen] = { user: 'talk to Allen', question: 'ask him everything' }
     end
     # use a for loop to find everyone's pair
-    @players.each do |_x|
-      @players.each do |_y|
-        p ''
-      end
-    end
+
     counter = 0
     puts @players.count
     second_counter = 0
-    @players.delete_if do |p|
-      save_the_second_player = nil
+    @players.each do |p|
       @players.each do |x|
         next if p.id == x.id
 
@@ -271,10 +265,13 @@ class Api::V1::GamesController < Api::V1::BaseController
         @game = @game.reload
         @pairlists = @game.pairlists.reload
         @player1_pairlist = @pairlists.find { |y| y.user.id == p.id }
+        break if @player1_pairlist.gamerlists.find { |x| x.game_round == @round.to_i }
 
         players_that_player1_that_has_already_played_with = @player1_pairlist.gamerlists.reload.collect { |gamerlist| gamerlist.user.id }
         second_counter += 1 if x.already_inside_another_users_gamerlist?(players_that_player1_that_has_already_played_with)
         next if x.already_inside_another_users_gamerlist?(players_that_player1_that_has_already_played_with)
+
+        # check whether the use already has a pair this round
 
         # @player1_gamerlists = @player1_pairlist.gamerlists.reload
         # @player2_gamerlist = @player1_gamerlists.find { |z| z.user.id == x.id }
@@ -306,6 +303,8 @@ class Api::V1::GamesController < Api::V1::BaseController
         person2_pairlist.user = x
         person1_gamerlist.user = p
         person2_gamerlist.user = x
+        person1_gamerlist.game_round = @round
+        person2_gamerlist.game_round = @round
         person1_pairlist.save
         person2_pairlist.save
         p person1_pairlist.errors
@@ -327,14 +326,12 @@ class Api::V1::GamesController < Api::V1::BaseController
         # # remove this two from the player list
         @players -= [p]
         @players -= [x]
-        save_the_second_player = true
+
         break
       end
-      return save_the_second_player
     end
     puts counter
     puts second_counter
-    asdasdas
     p @players.collect(&:id)
     puts '&&&&&&&&&'
     puts @game.inspect
