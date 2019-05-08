@@ -283,6 +283,8 @@ class Api::V1::GamesController < Api::V1::BaseController
         p x_pl
         p_pl.user = p
         x_pl.user = x
+        p_gl.user = p
+        x_gl.user = x
         p_pl.save!
         x_pl.save!
         p p_pl
