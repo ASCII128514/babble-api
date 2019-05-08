@@ -272,17 +272,25 @@ class Api::V1::GamesController < Api::V1::BaseController
         t = Task.all.sample
         pairs[p_authen] = { user: x, question: t.description }
         pairs[x_authen] = { user: p, question: t.description }
+        p pairs
         p_gl = Gamerlist.new
         x_gl = Gamerlist.new
 
         # get the pairlist for both p and x
         p_pl = @game.pairlists.find { |a| a.user == p }
         x_pl = @game.pairlists.find { |a| a.user == x }
-
+        p p_pl
+        p x_pl
         p_pl.user = p
-        x_xl.user = x
+        x_pl.user = x
+        p_pl.save!
+        x_pl.save!
+        p p_pl
+        p x_pl
         p_gl.pairlist = x_pl
         x_gl.pairlist = p_pl
+        p p_pl
+        p x_pl
         p_gl.save
         puts p_gl.errors.inspect
         x_gl.save
