@@ -201,6 +201,9 @@ class Api::V1::GamesController < Api::V1::BaseController
       Pairlist.find_or_create_by(game: @game, user: x)
     end
 
+    array_of_player_unique = []
+    @players = @players.uniq
+
     # shuffle every user to match them
     @players = @players.shuffle
 
@@ -246,64 +249,110 @@ class Api::V1::GamesController < Api::V1::BaseController
       pairs[last_authen] = { user: 'talk to Allen', question: 'ask him everything' }
     end
     # use a for loop to find everyone's pair
-    @players.each do |p|
+    @players.each do |_x|
+      @players.each do |_y|
+        p ''
+      end
+    end
+    counter = 0
+    puts @players.count
+    second_counter = 0
+    @players.delete_if do |p|
+      save_the_second_player = nil
       @players.each do |x|
-        next if p == x
+        next if p.id == x.id
 
-        puts "\n\n\n\n\n\n\n\n\n\n\n\n inside the nested for loop #{x}#{p}"
+        counter += 1
+        puts "\n\n\n\n\n\n\n\n\n\n\n\n inside the nested for loop #{x.inspect}#{p.inspect}"
         puts "this is inside the for loop!!!!!!! \n\n\n\n\n\n\n\n\n\n\n"
         # check whether the user has alrady paired with everyone else
 
         # check whether p has paired with x before
-        @pairlists = @game.pairlists
-        @pairlist = @pairlists.find { |y| y.user == p }
-        @gamerlists = @pairlist.gamerlists
-        # add them as pair for this round if they haven't be before
-        @gamerlist = @gamerlists.find { |z| z.user == x }
-        next unless @gamerlist.nil?
+        @game = @game.reload
+        @pairlists = @game.pairlists.reload
+        @player1_pairlist = @pairlists.find { |y| y.user.id == p.id }
+
+        players_that_player1_that_has_already_played_with = @player1_pairlist.gamerlists.reload.collect { |gamerlist| gamerlist.user.id }
+        second_counter += 1 if x.already_inside_another_users_gamerlist?(players_that_player1_that_has_already_played_with)
+        next if x.already_inside_another_users_gamerlist?(players_that_player1_that_has_already_played_with)
+
+        # @player1_gamerlists = @player1_pairlist.gamerlists.reload
+        # @player2_gamerlist = @player1_gamerlists.find { |z| z.user.id == x.id }
+        # next if @player2_gamerlist.present?
 
         # this means the user the haven't paired with, so create a pair
         p_token = { token: p.openid }
         p_authen = JWT.encode p_token, nil, 'none'
         x_token = { token: x.openid }
         x_authen = JWT.encode x_token, nil, 'none'
-        puts "in line 242\n\n\n\n"
+        puts "in line 270\n\n\n\n"
         # add question to every two users
         t = Task.all.sample
         pairs[p_authen] = { user: x, question: t.description }
         pairs[x_authen] = { user: p, question: t.description }
         p pairs
-        p_gl = Gamerlist.new
-        x_gl = Gamerlist.new
+        person1_gamerlist = Gamerlist.new
+        person2_gamerlist = Gamerlist.new
 
         # get the pairlist for both p and x
-        p_pl = @game.pairlists.find { |a| a.user == p }
-        x_pl = @game.pairlists.find { |a| a.user == x }
-        p p_pl
-        p x_pl
-        p_pl.user = p
-        x_pl.user = x
-        p_gl.user = p
-        x_gl.user = x
-        p_pl.save!
-        x_pl.save!
-        p p_pl
-        p x_pl
-        p_gl.pairlist = x_pl
-        x_gl.pairlist = p_pl
-        p p_pl
-        p x_pl
-        p_gl.save
-        puts p_gl.errors.inspect
-        x_gl.save
-        puts x_gl.errors.inspect
+        # find each user's existing pairlist for this game
+        person1_pairlist = @game.pairlists.find { |a| a.user == p }
+        person2_pairlist = @game.pairlists.find { |a| a.user == x }
+        p person1_pairlist
+        p person2_pairlist
 
-        # remove this two from the player list
+        # for each pairlist & game list, update the users
+        person1_pairlist.user = p
+        person2_pairlist.user = x
+        person1_gamerlist.user = p
+        person2_gamerlist.user = x
+        person1_pairlist.save
+        person2_pairlist.save
+        p person1_pairlist.errors
+        p person2_pairlist.errors
+
+        person1_gamerlist.pairlist = person2_pairlist
+        person2_gamerlist.pairlist = person1_pairlist
+        p person1_pairlist
+        p person2_pairlist
+        person1_gamerlist.save
+        puts person1_gamerlist.errors.inspect
+        person2_gamerlist.save
+        puts person2_gamerlist.errors.inspect
+
+        p '---------------'
+        p "p's gamerlist: #{person1_gamerlist.id} - #{person1_gamerlist.user.id} - #{person1_gamerlist.pairlist.user.id}"
+        p "x's gamerlist: #{person2_gamerlist.id} - #{person2_gamerlist.user.id} - #{person2_gamerlist.pairlist.user.id}"
+
+        # # remove this two from the player list
         @players -= [p]
         @players -= [x]
+        save_the_second_player = true
+        break
       end
+      return save_the_second_player
+    end
+    puts counter
+    puts second_counter
+    asdasdas
+    p @players.collect(&:id)
+    puts '&&&&&&&&&'
+    puts @game.inspect
+    puts 'But how many pairlists?'
+    puts @game.pairlists.count
+    puts 'But how about those gamelists for the users?'
+
+    @game.users.each do |user|
+      puts "Here's the pairlist in this game for user #{user.id} #{user.name}"
+      pairlist = user.pairlists.find { |p| p.game == @game }
+      pairlist.gamerlists.each do |gamerlist|
+        puts "Here's the gamerlist #{gamerlist.id} for user with id #{gamerlist.user.name} matched to user #{user.name}"
+      end
+
+      puts "\n\n"
     end
 
+    p pairs
     ActionCable.server.broadcast("game_channel_#{@game.id}",
                                  type: 'pair',
                                  pairs: pairs,

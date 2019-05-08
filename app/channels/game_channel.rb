@@ -41,27 +41,27 @@ class GameChannel < ApplicationCable::Channel
 
   def unsubscribed
     # remove the subscriber join table if the user close the connection
-    token = params[:token]
-    openid = decode(token)
-    p openid['token']
-    @user = User.find_by(openid: openid['token'])
-    sub = @user.subscribers.select { |x| x.game.id == params[:room] }
-    sub.each(&:destroy)
-    ids = []
-    @users = []
-    u = @game.users
-    # filter the people that is not in the room
-    u.each do |user|
-      puts user.id
-      puts 'inside loop'
-      unless ids.include?(user.id)
-        ids << user.id
-        @users << user if user.openid != openid['token']
-      end
-    end
-    ActionCable.server.broadcast("game_channel_#{params[:room]}",
-                                 type: 'users',
-                                 players: @users)
+    # token = params[:token]
+    # openid = decode(token)
+    # p openid['token']
+    # @user = User.find_by(openid: openid['token'])
+    # sub = @user.subscribers.select { |x| x.game.id == params[:room] }
+    # sub.each(&:destroy)
+    # ids = []
+    # @users = []
+    # u = @game.users
+    # # filter the people that is not in the room
+    # u.each do |user|
+    #   puts user.id
+    #   puts 'inside loop'
+    #   unless ids.include?(user.id)
+    #     ids << user.id
+    #     @users << user if user.openid != openid['token']
+    #   end
+    # end
+    # ActionCable.server.broadcast("game_channel_#{params[:room]}",
+    #                              type: 'users',
+    #                              players: @users)
   end
 
   private

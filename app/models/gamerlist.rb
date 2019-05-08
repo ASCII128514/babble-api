@@ -3,5 +3,12 @@
 class Gamerlist < ApplicationRecord
   belongs_to :user
   belongs_to :pairlist
-  has_many :gamerlists
+
+  # validates :unique_in_this_game
+
+  # private
+
+  # def unique_in_this_game
+  #   if user.id
+  # end
 end
