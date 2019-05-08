@@ -279,6 +279,8 @@ class Api::V1::GamesController < Api::V1::BaseController
         p_pl = @game.pairlists.find { |a| a.user == p }
         x_pl = @game.pairlists.find { |a| a.user == x }
 
+        p_pl.user = p
+        x_xl.user = x
         p_gl.pairlist = x_pl
         x_gl.pairlist = p_pl
         p_gl.save
