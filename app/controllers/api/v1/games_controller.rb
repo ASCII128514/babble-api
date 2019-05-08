@@ -281,8 +281,10 @@ class Api::V1::GamesController < Api::V1::BaseController
 
         p_gl.pairlist = x_pl
         x_gl.pairlist = p_pl
-        p_gl.save!
-        x_gl.save!
+        p_gl.save
+        puts p_gl.errors.inspect
+        x_gl.save
+        puts x_gl.errors.inspect
 
         # remove this two from the player list
         @players -= [p]
