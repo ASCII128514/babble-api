@@ -188,7 +188,6 @@ class Api::V1::GamesController < Api::V1::BaseController
     @game.update(game_round_now: r)
 
     @game.update(status: 'end') if r == @game.round_number
-
     # check whether the round is the less than the round number
     if r > @game.round_number
       ActionCable.server.broadcast("game_channel_#{params[:id]}",
@@ -250,7 +249,7 @@ class Api::V1::GamesController < Api::V1::BaseController
     @players.each do |p|
       @players.each do |x|
         next if p == x
-
+        puts "\n\n\n\n\n\n\n\n\n\n\n\n inside the nested for loop #{x, p}"
         puts "this is inside the for loop!!!!!!! \n\n\n\n\n\n\n\n\n\n\n"
         # check whether the user has alrady paired with everyone else
 
