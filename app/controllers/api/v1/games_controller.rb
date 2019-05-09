@@ -226,7 +226,9 @@ class Api::V1::GamesController < Api::V1::BaseController
       check_user -= [h] if check_list.include?(h)
     end
 
-    if check_user.length < 2
+    puts check_user.inspect
+    puts check_user.length
+    if check_user.length <= 6
       # destroy all the pairs to start over
       puts "this is inside the destruction function \n\n\n\n\n\n\n\n\n\n\n"
       @game.pairlists.each do |r|
