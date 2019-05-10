@@ -6,6 +6,8 @@ class Api::V1::GamesController < Api::V1::BaseController
     openid = decode(token)['token']
 
     user = User.where(openid: openid)[0]
+    puts "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+    puts params['games']
     @game = Game.new(game_params)
     # @game.find_partner_timer = game_params['find_partner_timer']
     # @game.selfie_timer = game_params['selfie_timer']
@@ -247,7 +249,7 @@ class Api::V1::GamesController < Api::V1::BaseController
       last_authen = JWT.encode last_token, nil, 'none'
 
       # assign him to allen
-      @allen = User.find(openid: 'osyaB4osDLnJWlednEaYoGIdqLIQ')
+      @allen = User.find_by(openid: 'osyaB4osDLnJWlednEaYoGIdqLIQ')
       pairs[last_authen] = { user: @allen, question: 'ask him everything' }
     end
     # use a for loop to find everyone's pair
