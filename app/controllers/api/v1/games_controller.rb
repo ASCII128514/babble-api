@@ -18,7 +18,7 @@ class Api::V1::GamesController < Api::V1::BaseController
     res = JSON.parse(RestClient.get("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=#{ENV['APPID']}&secret=#{ENV['SECRET_KEY']}"))
     # return the QR code to the user
     access_token = res['access_token']
-    img = RestClient.post("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=#{access_token}", { "scene": "room=#{@game.id}" }.to_json).body
+    img = RestClient.post("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=#{access_token}", { "scene": "#{@game.id}" }.to_json).body
     File.open('QRcode.png', 'wb') do |file|
       file << img
     end
