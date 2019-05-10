@@ -247,7 +247,8 @@ class Api::V1::GamesController < Api::V1::BaseController
       last_authen = JWT.encode last_token, nil, 'none'
 
       # assign him to allen
-      pairs[last_authen] = { user: 'talk to Allen', question: 'ask him everything' }
+      @allen = User.find(openid: 'osyaB4osDLnJWlednEaYoGIdqLIQ')
+      pairs[last_authen] = { user: @allen, question: 'ask him everything' }
     end
     # use a for loop to find everyone's pair
 
