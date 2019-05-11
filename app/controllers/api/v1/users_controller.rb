@@ -26,7 +26,8 @@ class Api::V1::UsersController < Api::V1::BaseController
 
       # store all the info from the user
       @user = User.find_or_create_by(openid: openid)
-
+      @user.update(name: 'new player')
+      @user.update(selfie: 'http://lc-qaxmtbr0.cn-n1.lcfile.com/fd9f22d3702e392f9491/anonymous_man.jpg')
       authen = JWT.encode payload, nil, 'none'
       render json: {
         authen: authen,
