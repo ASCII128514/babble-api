@@ -202,7 +202,6 @@ class Api::V1::GamesController < Api::V1::BaseController
     @players.each do |x|
       Pairlist.find_or_create_by(game: @game, user: x)
     end
-    array_of_player_unique = []
     @players = @players.uniq
 
     # shuffle every user to match them
@@ -250,6 +249,11 @@ class Api::V1::GamesController < Api::V1::BaseController
 
       # assign him to allen
       @allen = User.find_by(openid: 'osyaB4osDLnJWlednEaYoGIdqLIQ')
+      g = Gamerlist.new
+      g.user = @allen
+      g.game_round = @round
+      g.pairlist = @last_person.pairlists.find { |x| x.game.id == @game.id }
+      g.save
       pairs[last_authen] = { user: @allen, question: 'ask him everything' }
     end
     # use a for loop to find everyone's pair
@@ -355,6 +359,11 @@ class Api::V1::GamesController < Api::V1::BaseController
     end
 
     p pairs
+    # send the information for each user to get his own pair instead of sending a extreme big hash to the user
+    ActionCable.server.broadcast("game_channel_#{@game.id}",
+                                 type: 'start',
+                                 pairs: pairs,
+                                 round: @game.game_round_now)
     ActionCable.server.broadcast("game_channel_#{@game.id}",
                                  type: 'pair',
                                  pairs: pairs,
