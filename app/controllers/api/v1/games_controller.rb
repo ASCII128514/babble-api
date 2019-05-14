@@ -285,7 +285,7 @@ class Api::V1::GamesController < Api::V1::BaseController
       g.pairlist = @last_person.pairlists.find { |x| x.game.id == @game.id }
       g.save
       p g
-      pairs[last_authen] = { user: @allen, question: g.task }
+      pairs[last_authen] = { user: @allen, question: g.task.description }
     end
     # use a for loop to find everyone's pair
 
