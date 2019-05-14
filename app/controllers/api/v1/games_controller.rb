@@ -393,13 +393,13 @@ class Api::V1::GamesController < Api::V1::BaseController
 
     p pairs
     # send the information for each user to get his own pair instead of sending a extreme big hash to the user
-    # ActionCable.server.broadcast("game_channel_#{@game.id}",
-    #                              type: 'start',
-    #                              round: @game.game_round_now)
     ActionCable.server.broadcast("game_channel_#{@game.id}",
-                                 type: 'pair',
-                                 pairs: pairs,
+                                 type: 'start',
                                  round: @game.game_round_now)
+    # ActionCable.server.broadcast("game_channel_#{@game.id}",
+    #                              type: 'pair',
+    #                              pairs: pairs,
+    #                              round: @game.game_round_now)
 
     render json: {
       pairs: pairs
