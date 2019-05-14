@@ -58,6 +58,30 @@ class Api::V1::GamesController < Api::V1::BaseController
     # get the question for every user
   end
 
+  def findpair
+    @game = Game.find(params[:id])
+    @players = @game.users
+    @round = params[:round]
+    # find the current user
+    token = params[:token]
+    hash_openid = decode(token)
+    openid = hash_openid['token']
+    @user = User.find_by(openid: openid)
+
+    # find the pair of this round for the user
+    @pairlist = @user.pairlists.find { |p| p.game.id == @game.id }
+    p @pairlist.gamerlists
+    @pair = @pairlist.gamerlists.find { |x| x.game_round == @round.to_i }
+    p 'this line is running'
+    p @pair
+    @pair_user = @pair.user
+    render json: {
+      pair: {
+        user: @pair_user,
+        question: @pair.task.description
+      }
+    }
+  end
   # def pair
   #   # use the game id and user token to generate the random pair of users
   #   # store the pair into the list so that one person won't get the same pair twice
@@ -188,7 +212,7 @@ class Api::V1::GamesController < Api::V1::BaseController
 
     r = @game.game_round_now + 1
     @game.update(game_round_now: r)
-
+    @round = r
     @game.update(status: 'end') if r == @game.round_number
     # check whether the round is the less than the round number
     if r > @game.round_number
@@ -229,7 +253,7 @@ class Api::V1::GamesController < Api::V1::BaseController
 
     puts check_user.inspect
     puts check_user.length
-    if check_user.length <= 6
+    if check_user.length <= 2
       # destroy all the pairs to start over
       puts "this is inside the destruction function \n\n\n\n\n\n\n\n\n\n\n"
       @game.pairlists.each do |r|
@@ -251,10 +275,17 @@ class Api::V1::GamesController < Api::V1::BaseController
       @allen = User.find_by(openid: 'osyaB4osDLnJWlednEaYoGIdqLIQ')
       g = Gamerlist.new
       g.user = @allen
+      puts 'this line is in 276'
+      task = Task.all.sample
+      p task
+      g.task = task
+      puts 'this line is in 278'
+      p g.task
       g.game_round = @round
       g.pairlist = @last_person.pairlists.find { |x| x.game.id == @game.id }
       g.save
-      pairs[last_authen] = { user: @allen, question: 'ask him everything' }
+      p g
+      pairs[last_authen] = { user: @allen, question: g.task }
     end
     # use a for loop to find everyone's pair
 
@@ -311,7 +342,9 @@ class Api::V1::GamesController < Api::V1::BaseController
         person1_pairlist.user = p
         person2_pairlist.user = x
         person1_gamerlist.user = p
+        person1_gamerlist.task = t
         person2_gamerlist.user = x
+        person2_gamerlist.task = t
         person1_gamerlist.game_round = @round
         person2_gamerlist.game_round = @round
         person1_pairlist.save
@@ -362,12 +395,11 @@ class Api::V1::GamesController < Api::V1::BaseController
     # send the information for each user to get his own pair instead of sending a extreme big hash to the user
     ActionCable.server.broadcast("game_channel_#{@game.id}",
                                  type: 'start',
-                                 pairs: pairs,
                                  round: @game.game_round_now)
-    ActionCable.server.broadcast("game_channel_#{@game.id}",
-                                 type: 'pair',
-                                 pairs: pairs,
-                                 round: @game.game_round_now)
+    # ActionCable.server.broadcast("game_channel_#{@game.id}",
+    #                              type: 'pair',
+    #                              pairs: pairs,
+    #                              round: @game.game_round_now)
 
     render json: {
       pairs: pairs

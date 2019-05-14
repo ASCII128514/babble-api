@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_05_08_142048) do
+ActiveRecord::Schema.define(version: 2019_05_14_042827) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,7 +21,9 @@ ActiveRecord::Schema.define(version: 2019_05_08_142048) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "game_round"
+    t.bigint "task_id"
     t.index ["pairlist_id"], name: "index_gamerlists_on_pairlist_id"
+    t.index ["task_id"], name: "index_gamerlists_on_task_id"
     t.index ["user_id"], name: "index_gamerlists_on_user_id"
   end
 
@@ -99,6 +101,7 @@ ActiveRecord::Schema.define(version: 2019_05_08_142048) do
   end
 
   add_foreign_key "gamerlists", "pairlists"
+  add_foreign_key "gamerlists", "tasks"
   add_foreign_key "gamerlists", "users"
   add_foreign_key "games", "users"
   add_foreign_key "lists", "games"

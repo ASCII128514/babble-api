@@ -2,4 +2,5 @@
 
 class Task < ApplicationRecord
   has_many :rounds, dependent: :destroy
+  has_many :gamerlists
 end
